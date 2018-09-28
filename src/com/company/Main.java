@@ -1,7 +1,34 @@
 package com.company;
 
-class MatrixThreads {
+class MatrixThreads implements Runnable {
 
+    int matrixA[][];
+    int matrixB[][];
+
+    public MatrixThreads(int[][] m, int[][] n) {
+        this.matrixA = m;
+        this.matrixB = n;
+
+
+    }
+
+
+    @Override
+    public void run() {
+
+        int size = matrixA.length;
+        int answer[][] = new int[size][size];
+        for (int i  = 0; i < size/2; i++) {
+            for (int j = 0; j < i; j++) {
+                for (int k = 0; k < size; k++) {
+                    answer[i][j] = answer[i][j] + (matrixA[i][k] * matrixB[k][j]);
+                }
+            }
+
+
+        }
+
+    }
 }
 
 public class Main {
@@ -25,6 +52,8 @@ public class Main {
     }
 
     public static int[][] multiplyParallel(int[][] a, int[][] b) {
+        Thread t1 = new Thread();
+        t1.start();
         int size = a.length;
         int answer[][] = new int[size][size];
         for (int i = 0; i < size; i++) {
@@ -33,6 +62,12 @@ public class Main {
                     answer[i][j] = answer[i][j] + (a[i][k] * b[k][j]);
                 }
             }
+        }
+
+        try {
+            t1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return answer;
     }
@@ -67,6 +102,19 @@ public class Main {
         // filler, make either a new class that extends thread, or have this one extend thread
         // figure out how to split work up into at least 2 more threads
         int d[][] = multiplyParallel(a, b);
+//        int d[][] = new int[size][size];
+//        MatrixThreads m1 = new MatrixThreads(a, b, d, 0, 500);
+//        MatrixThreads m2 = new MatrixThreads(a, b, d, 500, 1000);
+//        Thread t1 = new Thread(m1);
+//        Thread t2 = new Thread(m2);
+//
+//        try {
+//            t1.join();
+//            t2.join();
+//
+//        } catch(InterruptedException e) {
+//            e.printStackTrace();
+//        }
         endTime = System.nanoTime();
         long parallelTime = endTime - startTime;
         System.out.println("Parallel Time " + parallelTime + " ns");
